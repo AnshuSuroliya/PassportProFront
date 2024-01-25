@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../User/reducers/Auth";
 import Nav from "../Navbar/Nav";
 import  Footer  from "../Footer/Footer"
+import swal from "sweetalert";
 const Register=()=>{
     const [data,setData]=useState({firstName:""});
     const dispatch=useDispatch();
@@ -15,7 +16,15 @@ const Register=()=>{
     const [message4,setMessage4]=useState();
     const [valid,setValid]=useState(true);
     const [valid1,setValid1]=useState(true);
-   
+   const popup=()=>{
+    swal({
+      text: "User Registered!",
+      icon: "success",
+      button: "Ok"
+    }).then((value)=>{
+      navigate("/login");
+    })
+   }
     const regEx1=/^[a-zA-Z.']{1,}$/;
     const handleChange1=(e)=>{
       setData({ ...data, [e.target.name]: e.target.value });
@@ -108,15 +117,11 @@ const Register=()=>{
           }
           else setValid1(false);
     }
-    const handleSubmit=(e)=>{
+    const handleSubmit=async(e)=>{
         e.preventDefault();
         console.log(data);
-        dispatch(registerUser(data));
-        if(registerData.message==="User Registered Successfully"||registerData.message==="User Already Present"){
-        setTimeout(()=>{
-          navigate("/login");
-        },1000)
-      }
+       await dispatch(registerUser(data));
+     
     }
 return(
 <div className="bg-gradient-to-br from-zinc-200 to-zinc-100 w-full py-1">
@@ -160,9 +165,14 @@ return(
         </p>
                 </div>
                 }
-                {registerData.success ? <div className="flex justify-center mt-2">
-                    <p className="text-green-500 font-serif ">{registerData.message}</p>
-                    </div> : <div className="flex justify-center mt-2">
+                {registerData.success ? 
+                
+                <div>{popup()}</div>
+                // <div className="flex justify-center mt-2">
+                //     <p className="text-green-500 font-serif ">{registerData.message}</p>
+                //     </div> 
+                    :
+                     <div className="flex justify-center mt-2">
                     <p className="text-red-500 font-serif ">{registerData.message}</p>
                     </div>}
                 

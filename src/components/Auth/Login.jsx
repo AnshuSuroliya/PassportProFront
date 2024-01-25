@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../User/reducers/Auth";
 import Nav from "../Navbar/Nav";
 import Footer from "../Footer/Footer";
+import swal from "sweetalert";
 
 const Login=()=>{
     const dispatch=useDispatch();
@@ -54,15 +55,16 @@ const Login=()=>{
         e.preventDefault();
         dispatch(loginUser(data));
         
-       
-        setTimeout(()=>{
-            if(localStorage.getItem("jwt")!=null){
-            navigate("/");
-            }
-        },1000)
-        
     }
-   
+   const popup=()=>{
+    swal({
+        text: "Login Successfull!",
+        icon: "success",
+        button: "Ok"
+      }).then((value)=>{
+        navigate("/");
+      })
+   }
     
     return(
         <div className="bg-gradient-to-br from-zinc-200 to-zinc-100 h-screen w-full p-1">
@@ -87,9 +89,14 @@ const Login=()=>{
                 <div class="flex items-center mt-2">
             <input name="password" maxLength="24" required className="appearance-none bg-transparent border-b border-teal-500 py-2 focus:border-b-2 w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none outline-blue-500 text-center" type="password" placeholder="Password" onChange={handleChange}/>
                 </div>
-                {loginData.success ?  <div className="flex justify-center mt-6">
-                    <p className="text-green-500 font-serif ">{loginData.message}</p>
-                    </div>:  <div className="flex justify-center mt-6">
+                {loginData.success ?  
+                
+                <div>{popup()}</div>
+                // <div className="flex justify-center mt-6">
+                //     <p className="text-green-500 font-serif ">{loginData.message}</p>
+                //     </div>
+                    : 
+                     <div className="flex justify-center mt-6">
                     <p className="text-red-500 font-serif ">{loginData.message}</p>
                     </div>}
                 

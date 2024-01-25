@@ -13,6 +13,7 @@ import Footer from "../Footer/Footer";
 import { Country, State, City }  from 'country-state-city';
 import { Controller, useForm } from 'react-hook-form';
 import { getUser } from "../../User/reducers/Auth";
+import swal from "sweetalert";
 
 const Verification=()=>{
     const dispatch=useDispatch();
@@ -227,6 +228,23 @@ const Verification=()=>{
           setMessage8("");
         }
     }
+    const handleFetch=(e)=>{
+      setPassportNumb(e.target.value)
+      if(regEx4.test(e.target.value))
+        {
+          setMessage8("")
+          setValid(true);
+        }
+        
+        else if(!regEx4.test(e.target.value))
+        {
+          setMessage8("Passport Number must contain capital letter and numbers")
+          setValid(false);
+        }
+        else{
+          setMessage8("");
+        }
+    }
     const handleGoogleDriveClick = () => {
       setShowGoogleDriveFields(true);
     };
@@ -296,7 +314,7 @@ const Verification=()=>{
         fdata.append('passportNumber',data.passportNumber);
         fdata.append('validity',data.validity);
         if (data.passportDoc) {
-          data.append('passportDoc',data.passportDoc);
+          fdata.append('passportDoc',data.passportDoc);
         } else if (fetchedImage) {
           const fetchedImageBlob = await fetch(fetchedImage).then((res) => res.blob());
           const fetchedImageFile = new File([fetchedImageBlob], 'fetched_passport_image.jpg');
@@ -305,14 +323,18 @@ const Verification=()=>{
         }
         console.log([...fdata.entries()]);
         dispatch(verifyPassport(fdata));
-        if(passportData.message=="Registered Successfully"){
-        setTimeout(()=>{
-            navigate("/");
-        },1000)
-    }
+        
     }
      
-  
+  const popup=()=>{
+    swal({
+      text: "Verified and Registered!",
+      icon: "success",
+      button: "Ok"
+    }).then((value)=>{
+      navigate("/profile");
+    })
+  }
   
 
 return(
@@ -485,7 +507,7 @@ return(
               className="bg-transparent border-b border-teal-500  focus:border-b-2 mt-4 focus:outline-none w-32"
               required
               name="passportNumb"
-              onChange={(e)=>setPassportNumb(e.target.value)}
+              onChange={handleFetch}
               label="Passport Number"
             />
           )}
@@ -529,7 +551,9 @@ return(
         
               </div>
    
-                {passportData.success ?  <div className="flex justify-center mt-4"><p className="text-green-500  font-serif">{passportData.message}</p></div>
+                {passportData.success ?  
+                <div>{popup()}</div>
+                // <div className="flex justify-center mt-4"><p className="text-green-500  font-serif">{passportData.message}</p></div>
                 :
                  <div className="flex justify-center mt-4"><p className="text-red-500  font-serif">{passportData.message}</p></div>}
                 
